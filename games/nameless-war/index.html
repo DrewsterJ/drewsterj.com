@@ -18,40 +18,11 @@
   </header>
 
   <main class="nw">
-    <div class="nw-hud">
-      <div class="nw-stat">Gold <b id="gold">0</b></div>
-      <div class="nw-stat">Age <b id="age">Stone Age</b></div>
-      <div class="nw-xp">
-        <span>XP</span>
-        <div class="nw-bar"><i id="xpbar"></i></div>
-        <b id="xp">0</b>
-      </div>
-      <div class="nw-hud-buttons">
-        <button id="pauseBtn" type="button" title="Pause (P)">Pause</button>
-        <button id="muteBtn" type="button" title="Sound (M)">Sound: on</button>
-      </div>
-    </div>
-
-    <div class="nw-stage">
-      <canvas id="game" aria-label="Nameless War battlefield"></canvas>
+    <div id="stage" class="nw-stage">
+      <canvas id="game" aria-label="Nameless War. Keys: 1 2 3 train units, T build turret, S sell, U upgrade, Q special, E evolve, P pause."></canvas>
       <div id="overlay" class="nw-overlay"></div>
     </div>
-
-    <div class="nw-queue">
-      <span>Training</span>
-      <div id="queue" class="nw-slots"></div>
-    </div>
-
-    <div class="nw-controls">
-      <button class="nw-btn unit" data-unit="0" type="button"><kbd>1</kbd><span class="n"></span><span class="c"></span><span class="s"></span></button>
-      <button class="nw-btn unit" data-unit="1" type="button"><kbd>2</kbd><span class="n"></span><span class="c"></span><span class="s"></span></button>
-      <button class="nw-btn unit" data-unit="2" type="button"><kbd>3</kbd><span class="n"></span><span class="c"></span><span class="s"></span></button>
-      <button class="nw-btn" id="turretBtn" type="button"><kbd>T</kbd><span class="n"></span><span class="c"></span><span class="s">Defends your base</span></button>
-      <button class="nw-btn" id="sellBtn" type="button"><kbd>S</kbd><span class="n">Sell turret</span><span class="c"></span><span class="s">50% refund</span></button>
-      <button class="nw-btn" id="upgradeBtn" type="button"><kbd>U</kbd><span class="n"></span><span class="c"></span><span class="s">+10% HP and damage</span></button>
-      <button class="nw-btn special" id="specialBtn" type="button"><kbd>Q</kbd><span class="n"></span><span class="c"></span><span class="s">Hits the enemy side</span></button>
-      <button class="nw-btn evolve" id="evolveBtn" type="button"><kbd>E</kbd><span class="n"></span><span class="c"></span><span class="s"></span></button>
-    </div>
+    <p class="nw-hint">Hover over a button for details. Keys: 1 2 3 train · T turret · S sell · U upgrade · Q special · E evolve · P pause · F fullscreen</p>
   </main>
 
   <script src="game.js"></script>
