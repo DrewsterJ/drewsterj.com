@@ -1,11 +1,67 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DrewsterJ</title>
+  <meta name="description" content="DrewsterJ: tools, projects, and other stuff.">
+  <link rel="canonical" href="https://drewsterj.com/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+
+  <meta property="og:title" content="DrewsterJ">
+  <meta property="og:description" content="DrewsterJ: tools, projects, and other stuff.">
+  <meta property="og:url" content="https://drewsterj.com/">
+  <meta property="og:type" content="website">
 </head>
 <body>
-  <h1>DrewsterJ</h1>
-  <p>It works.</p>
+  <header class="site-header">
+    <a class="brand" href="/">DrewsterJ</a>
+    <nav>
+      <a href="#stuff">Stuff</a>
+      <a href="#links">Links</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>DrewsterJ</h1>
+      <p class="lede">
+        <!-- TODO: a one-line tagline. -->
+        Tools, projects, and other stuff.
+      </p>
+    </section>
+
+    <section id="stuff">
+      <h2>Stuff</h2>
+      <ul class="cards">
+        <!-- TODO: copy one <li> per item. -->
+        <li class="card">
+          <h3><a href="https://github.com/DrewsterJ/drewsterj.com">drewsterj.com</a></h3>
+          <p>This site. Plain HTML and CSS on GitHub Pages.</p>
+        </li>
+        <li class="card">
+          <h3>Coming soon</h3>
+          <p>More to come.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section id="links">
+      <h2>Links</h2>
+      <ul class="links">
+        <li><a href="https://github.com/DrewsterJ">GitHub</a></li>
+        <!-- TODO: add or remove links as you like. -->
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year">2026</span> DrewsterJ</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
