@@ -1,0 +1,249 @@
+.nw-header,
+.nw {
+  max-width: 64rem;
+}
+
+.nw {
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.nw button {
+  font: inherit;
+  color: var(--fg);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.nw button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.nw-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.nw-stat b {
+  font-variant-numeric: tabular-nums;
+}
+
+.nw-xp {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 12rem;
+}
+
+.nw-xp b {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nw-bar {
+  flex: 1;
+  height: 0.5rem;
+  min-width: 4rem;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.nw-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width 0.2s;
+}
+
+.nw-hud-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nw-hud-buttons button {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.nw-stage {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #000;
+}
+
+.nw-stage canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1000 / 420;
+  touch-action: manipulation;
+}
+
+.nw-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 0.6);
+  color: #fff;
+  text-align: center;
+  overflow-y: auto;
+}
+
+.nw-overlay.open {
+  display: flex;
+}
+
+.nw-overlay h2 {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  margin: 0 0 0.25rem;
+}
+
+.nw-overlay p {
+  margin: 0.25rem 0 0.75rem;
+  color: #e7e5e4;
+}
+
+.nw-overlay .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.nw-overlay button {
+  padding: 0.5rem 1.1rem;
+  font-weight: 600;
+  background: #fff;
+  color: #1c1917;
+  border: 0;
+}
+
+.nw-overlay button.primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.nw-overlay .help {
+  font-size: 0.85rem;
+  color: #d6d3d1;
+}
+
+.nw-queue {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.nw-slots {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.nw-slot {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  background: var(--card);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.nw-slot i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--accent);
+}
+
+.nw-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.5rem;
+}
+
+.nw-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  min-height: 4.25rem;
+}
+
+.nw-btn:not(:disabled):hover {
+  border-color: var(--accent);
+}
+
+.nw-btn kbd {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.5rem;
+  font: 600 0.7rem/1 system-ui, sans-serif;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.3rem;
+}
+
+.nw-btn .n {
+  font-weight: 600;
+  padding-right: 1.5rem;
+}
+
+.nw-btn .c {
+  font-size: 0.85rem;
+  color: #ca8a04;
+  font-variant-numeric: tabular-nums;
+}
+
+.nw-btn .s {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.nw-btn.ready {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
+  animation: nw-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes nw-pulse {
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 15%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nw-btn.ready {
+    animation: none;
+  }
+}
