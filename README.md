@@ -1,6 +1,6 @@
 # drewsterj.com
 
-Personal site, served by GitHub Pages at <https://drewsterj.com>.
+Served by GitHub Pages at <https://drewsterj.com>.
 
 Plain HTML and CSS with no build step: whatever is on `main` is what gets published.
 
