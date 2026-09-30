@@ -8,7 +8,7 @@ Plain HTML and CSS with no build step: whatever is on `main` is what gets publis
 
 | File          | Purpose                                              |
 | ------------- | ---------------------------------------------------- |
-| `index.html`  | Home page. Look for `TODO` comments to fill in.      |
+| `index.html`  | Home page, with a showcase card per web game.        |
 | `style.css`   | All styling. Colors live in `:root` at the top.      |
 | `404.html`    | Shown by GitHub Pages for missing URLs.              |
 | `favicon.svg` | Browser tab icon.                                    |
