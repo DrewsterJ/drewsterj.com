@@ -1,0 +1,101 @@
+.nw-header,
+.nw {
+  max-width: 64rem;
+}
+
+.nw {
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.nw-stage {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #000;
+}
+
+.nw-stage canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1000 / 500;
+  touch-action: manipulation;
+}
+
+/* Fullscreen: letterbox the canvas at its aspect ratio. */
+.nw-stage:fullscreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0;
+}
+
+.nw-stage:fullscreen canvas {
+  width: min(100vw, 200vh);
+}
+
+.nw-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.nw-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 0.6);
+  color: #fff;
+  text-align: center;
+  overflow-y: auto;
+}
+
+.nw-overlay.open {
+  display: flex;
+}
+
+.nw-overlay h2 {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  margin: 0 0 0.25rem;
+}
+
+.nw-overlay p {
+  margin: 0.25rem 0 0.75rem;
+  color: #e7e5e4;
+}
+
+.nw-overlay .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.nw-overlay button {
+  font: inherit;
+  padding: 0.5rem 1.1rem;
+  font-weight: 600;
+  background: #fff;
+  color: #1c1917;
+  border: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.nw-overlay button.primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.nw-overlay .help {
+  font-size: 0.85rem;
+  color: #d6d3d1;
+}
