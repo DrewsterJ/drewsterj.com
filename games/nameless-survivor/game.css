@@ -1,0 +1,290 @@
+.nw-header,
+.nw {
+  max-width: 64rem;
+}
+
+.nw {
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.nw-stage {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #000;
+}
+
+.nw-stage canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1000 / 560;
+  touch-action: manipulation;
+}
+
+/* Fullscreen: letterbox the canvas at its aspect ratio. */
+.nw-stage:fullscreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0;
+}
+
+.nw-stage:fullscreen canvas {
+  width: min(100vw, 178.57vh);
+}
+
+.nw-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.nw-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 0.6);
+  color: #fff;
+  text-align: center;
+  overflow-y: auto;
+}
+
+.nw-overlay.open {
+  display: flex;
+}
+
+.nw-overlay h2 {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  margin: 0 0 0.25rem;
+}
+
+.nw-overlay p {
+  margin: 0.25rem 0 0.75rem;
+  color: #e7e5e4;
+}
+
+.nw-overlay .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.nw-overlay button {
+  font: inherit;
+  padding: 0.5rem 1.1rem;
+  font-weight: 600;
+  background: #fff;
+  color: #1c1917;
+  border: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.nw-overlay button.primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.nw-overlay .help {
+  font-size: 0.85rem;
+  color: #d6d3d1;
+}
+
+/* Nameless Survivor menus. */
+.nw-overlay {
+  background: rgb(3 6 14 / 0.8);
+}
+
+.nw-overlay button.primary {
+  background: #7c3aed;
+}
+
+.sv-panel {
+  width: 100%;
+  max-width: 46rem;
+  margin: auto; /* centred, but scrolls from the top when taller than the stage */
+}
+
+.sv-panel p {
+  font-size: 0.95rem;
+}
+
+.sv-panel img.coin {
+  width: 1rem;
+  height: 1rem;
+  vertical-align: -0.15rem;
+}
+
+.sv-chars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.nw-overlay button.sv-char {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem;
+  background: rgb(255 255 255 / 0.08);
+  color: #fff;
+  border: 2px solid transparent;
+  font-weight: 400;
+  text-align: center;
+}
+
+.nw-overlay button.sv-char:hover {
+  background: rgb(255 255 255 / 0.16);
+}
+
+.nw-overlay button.sv-char.sel {
+  border-color: #a78bfa;
+  background: rgb(124 58 237 / 0.3);
+}
+
+.nw-overlay button.sv-char.locked img {
+  filter: grayscale(1) brightness(0.6);
+}
+
+.nw-overlay button.sv-char[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sv-char img {
+  width: 3rem;
+  height: auto;
+}
+
+.sv-char small {
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: #d6d3d1;
+}
+
+.sv-char em {
+  font-size: 0.75rem;
+  font-style: normal;
+  color: #fcd34d;
+}
+
+.sv-shop {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+  text-align: left;
+}
+
+.sv-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: rgb(255 255 255 / 0.07);
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.sv-item img {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.sv-item div {
+  flex: 1;
+}
+
+.sv-item small {
+  color: #d6d3d1;
+}
+
+.sv-item .pips {
+  color: #fcd34d;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+.nw-overlay .sv-item button {
+  padding: 0.3rem 0.6rem;
+  min-width: 3.5rem;
+}
+
+.nw-overlay button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sv-build,
+.sv-recipes {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.25rem 1rem;
+  margin: 0.5rem auto;
+  padding: 0;
+  max-width: 40rem;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.sv-recipes {
+  grid-template-columns: 1fr;
+  max-width: 30rem;
+  font-size: 0.8rem;
+}
+
+.sv-build img,
+.sv-recipes img {
+  width: 1.25rem;
+  height: 1.25rem;
+  vertical-align: -0.3rem;
+}
+
+.sv-build span,
+.sv-recipes span {
+  color: #a8a29e;
+}
+
+/* Small screens: keep the menu short enough to fit the stage. */
+@media (max-width: 40rem) {
+  .nw-overlay h2 {
+    font-size: 1.4rem;
+  }
+
+  .sv-intro,
+  .sv-keys,
+  .sv-char small,
+  .sv-recipes {
+    display: none;
+  }
+
+  .sv-chars {
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: 6.5rem;
+    overflow-x: auto;
+    margin: 0.4rem 0;
+  }
+
+  .sv-char img {
+    width: 2rem;
+  }
+
+  .nw-overlay button.sv-char {
+    font-size: 0.8rem;
+    padding: 0.35rem;
+  }
+}
