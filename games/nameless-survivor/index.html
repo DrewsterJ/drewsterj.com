@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nameless Survivor · DrewsterJ</title>
+  <meta name="description" content="Nameless Survivor: your weapons fire on their own. Level up, evolve them, and survive fifteen minutes on a haunted moor.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+  <header class="site-header nw-header">
+    <a class="brand" href="../../">DrewsterJ</a>
+    <nav>
+      <a href="../../#games">Games</a>
+    </nav>
+  </header>
+
+  <main class="nw">
+    <div id="stage" class="nw-stage">
+      <canvas id="game" aria-label="Nameless Survivor. WASD or arrow keys move, weapons fire automatically, P pauses."></canvas>
+      <div id="overlay" class="nw-overlay"></div>
+    </div>
+    <p class="nw-hint">WASD or arrows to move (or drag on the screen) · weapons fire on their own · 1 2 3 pick upgrades · P pause · M mute · F fullscreen</p>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
