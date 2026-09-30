@@ -4,21 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DrewsterJ</title>
-  <meta name="description" content="DrewsterJ: tools, projects, and other stuff.">
+  <meta name="description" content="DrewsterJ: games you can play in your browser, and other stuff.">
   <link rel="canonical" href="https://drewsterj.com/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
 
   <meta property="og:title" content="DrewsterJ">
-  <meta property="og:description" content="DrewsterJ: tools, projects, and other stuff.">
+  <meta property="og:description" content="DrewsterJ: games you can play in your browser, and other stuff.">
   <meta property="og:url" content="https://drewsterj.com/">
   <meta property="og:type" content="website">
+  <meta property="og:image" content="https://drewsterj.com/games/nameless-stand/thumb.jpg">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="/">DrewsterJ</a>
     <nav>
-      <a href="#stuff">Stuff</a>
+      <a href="#games">Games</a>
       <a href="#links">Links</a>
     </nav>
   </header>
@@ -26,39 +27,52 @@
   <main>
     <section class="hero">
       <h1>DrewsterJ</h1>
-      <p class="lede">
-        <!-- TODO: a one-line tagline. -->
-        Tools, projects, and other stuff.
-      </p>
+      <p class="lede">Games you can play right in your browser, and other stuff.</p>
     </section>
 
-    <section id="stuff">
-      <h2>Stuff</h2>
-      <ul class="cards">
-        <!-- TODO: copy one <li> per item. -->
-        <li class="card">
-          <h3><a href="https://github.com/DrewsterJ/drewsterj.com">drewsterj.com</a></h3>
-          <p>This site. Plain HTML and CSS on GitHub Pages.</p>
+    <section id="games">
+      <div class="section-head">
+        <h2>Games</h2>
+        <p>Free, no downloads. Works best with a mouse and keyboard.</p>
+      </div>
+      <ul class="games">
+        <!-- One <li> per web game. Thumbnails are 960px wide JPEGs captured from the game. -->
+        <li>
+          <a class="game" href="games/nameless-stand/">
+            <div class="game-thumb">
+              <img src="games/nameless-stand/thumb.jpg" alt="Nameless Stand: survivors behind a barricade shooting at a horde of zombies at night" width="960" height="426" loading="lazy">
+              <span class="badge">Prototype</span>
+            </div>
+            <div class="game-body">
+              <ul class="tags">
+                <li>Survival</li>
+                <li>Shooter</li>
+                <li>Base building</li>
+              </ul>
+              <h3>Nameless Stand</h3>
+              <p>Hold the barricade against the horde each night. By day, scavenge the city, build defences and recruit survivors. Last 15 nights.</p>
+              <p class="game-meta">Mouse to aim · 20–40 minute runs</p>
+              <span class="play">Play now <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
         </li>
-        <li class="card">
-          <h3><a href="games/nameless-war/">Nameless War</a></h3>
-          <p>Train an army and evolve through four ages to destroy the enemy base. Early prototype.</p>
-          <p class="card-links"><a href="games/nameless-war/">Play in browser</a></p>
-        </li>
-        <li class="card">
-          <h3><a href="games/nameless-stand/">Nameless Stand</a></h3>
-          <p>Hold the barricade through the night and prepare during the day. Survive 15 nights. Early prototype.</p>
-          <p class="card-links"><a href="games/nameless-stand/">Play in browser</a></p>
-        </li>
-        <li class="card">
-          <h3><a href="https://github.com/DrewsterJ/Frogger">Frogger</a></h3>
-          <p>A take on the classic arcade game. Built with Unity and C#.</p>
-          <p class="card-links"><a href="https://github.com/DrewsterJ/Frogger/releases/latest">Latest release</a></p>
-        </li>
-        <li class="card">
-          <h3><a href="https://github.com/DrewsterJ/Nameless-Defence">Nameless Defence</a></h3>
-          <p>A 2D turret-building defence game: survive waves of enemies. Built with Unity and C#. Unfinished.</p>
-          <p class="card-links"><a href="https://github.com/DrewsterJ/Nameless-Defence/releases/latest">Latest release</a></p>
+        <li>
+          <a class="game" href="games/nameless-war/">
+            <div class="game-thumb">
+              <img src="games/nameless-war/thumb.jpg" alt="Nameless War: two armies clash between their castles as rocks rain down" width="960" height="403" loading="lazy">
+              <span class="badge">Prototype</span>
+            </div>
+            <div class="game-body">
+              <ul class="tags">
+                <li>Strategy</li>
+                <li>Lane battle</li>
+              </ul>
+              <h3>Nameless War</h3>
+              <p>Train an army, place your turrets and evolve from the Stone Age to the future. Destroy the enemy base before it destroys yours.</p>
+              <p class="game-meta">Mouse or keyboard · 10–20 minute battles</p>
+              <span class="play">Play now <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
         </li>
       </ul>
     </section>
@@ -67,7 +81,7 @@
       <h2>Links</h2>
       <ul class="links">
         <li><a href="https://github.com/DrewsterJ">GitHub</a></li>
-        <!-- TODO: add or remove links as you like. -->
+        <li><a href="https://github.com/DrewsterJ/drewsterj.com">Source for this site</a></li>
       </ul>
     </section>
   </main>
