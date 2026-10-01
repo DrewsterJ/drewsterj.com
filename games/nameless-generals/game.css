@@ -145,3 +145,10 @@
   background: #fff;
   color: #1c1917;
 }
+
+/* Use as much of the window as fits: the full width, or as wide as the
+   window's height allows at the game's 1000:560 shape. */
+.nw-header,
+.nw {
+  max-width: max(64rem, min(100%, calc((100vh - 9rem) * 1000 / 560 + 2rem)));
+}
