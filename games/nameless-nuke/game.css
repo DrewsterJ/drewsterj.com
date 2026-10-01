@@ -1,6 +1,7 @@
+/* Grow with the window at the canvas's 1000:560 shape. */
 .nw-header,
 .nw {
-  max-width: 64rem;
+  max-width: max(64rem, min(100%, calc((100vh - 9rem) * 1000 / 560 + 2rem)));
 }
 
 .nw {
@@ -22,7 +23,8 @@
   display: block;
   width: 100%;
   aspect-ratio: 1000 / 560;
-  touch-action: manipulation;
+  /* The map handles its own pinch-zoom and drag-pan. */
+  touch-action: none;
 }
 
 /* Fullscreen: letterbox the canvas at its aspect ratio. */
@@ -165,4 +167,69 @@
   color: #94a3b8;
   font-weight: 600;
   border-bottom: 1px solid rgb(56 189 248 / 0.3);
+}
+
+.nk-sub {
+  margin: 0.9rem 0 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.nk-results {
+  max-width: 44rem;
+}
+
+.nk-scroll {
+  overflow-x: auto;
+}
+
+.nk-chart {
+  display: block;
+  width: 100%;
+  max-width: 35rem;
+  height: auto;
+  margin: 0 auto;
+  background: rgb(15 23 42 / 0.6);
+  border: 1px solid rgb(56 189 248 / 0.2);
+  border-radius: 0.5rem;
+}
+
+.nk-events {
+  list-style: none;
+  margin: 0.25rem auto;
+  padding: 0;
+  max-width: 34rem;
+  max-height: 14rem;
+  overflow-y: auto;
+  text-align: left;
+  font-size: 0.82rem;
+}
+
+.nk-events li {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.15rem 0;
+  border-bottom: 1px solid rgb(56 189 248 / 0.08);
+}
+
+.nk-events time {
+  flex: none;
+  width: 2.6rem;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+.nk-log {
+  margin: 0.8rem auto 0;
+  max-width: 34rem;
+}
+
+.nk-log summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
 }

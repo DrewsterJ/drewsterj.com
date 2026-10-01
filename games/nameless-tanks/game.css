@@ -1,6 +1,7 @@
+/* Grow with the window, keeping the 1000:560 stage fully in view. */
 .nw-header,
 .nw {
-  max-width: 64rem;
+  max-width: max(64rem, min(100%, calc((100vh - 9rem) * 1000 / 560 + 2rem)));
 }
 
 .nw {
@@ -22,7 +23,8 @@
   display: block;
   width: 100%;
   aspect-ratio: 1000 / 560;
-  touch-action: manipulation;
+  /* The canvas handles its own drags (twin-stick touch controls). */
+  touch-action: none;
 }
 
 /* Fullscreen: letterbox the canvas at its aspect ratio. */
@@ -48,8 +50,6 @@
   position: absolute;
   inset: 0;
   display: none;
-  align-items: center;
-  justify-content: center;
   padding: 1rem;
   background: rgb(0 0 0 / 0.6);
   color: #fff;
@@ -59,6 +59,12 @@
 
 .nw-overlay.open {
   display: flex;
+}
+
+/* Centre with auto margins so tall content can still scroll on small screens. */
+.nw-overlay > div {
+  margin: auto;
+  max-width: 44rem;
 }
 
 .nw-overlay h2 {
@@ -98,4 +104,56 @@
 .nw-overlay .help {
   font-size: 0.85rem;
   color: #d6d3d1;
+}
+
+.nw-overlay .help b {
+  color: #fde047;
+}
+
+.nw-overlay .settings {
+  margin-top: 0.9rem;
+}
+
+.nw-overlay button.toggle {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgb(255 255 255 / 0.1);
+  color: #e7e5e4;
+  border: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.nw-overlay button.toggle[aria-pressed="true"] {
+  background: rgb(103 232 249 / 0.2);
+  border-color: rgb(103 232 249 / 0.6);
+  color: #ecfeff;
+}
+
+/* Phones: the stage is short, so the overlay text shrinks to fit. */
+@media (max-width: 600px) {
+  .nw-overlay {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .nw-overlay h2 {
+    font-size: 1.3rem;
+  }
+
+  .nw-overlay p {
+    margin: 0.15rem 0 0.4rem;
+  }
+
+  .nw-overlay button {
+    padding: 0.35rem 0.8rem;
+  }
+
+  .nw-overlay .help {
+    font-size: 0.72rem;
+  }
+
+  /* The controls line repeats the hint under the stage. */
+  .nw-overlay .help.controls {
+    display: none;
+  }
 }

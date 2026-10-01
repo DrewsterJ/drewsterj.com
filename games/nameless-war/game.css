@@ -1,6 +1,7 @@
+/* The stage grows with the window, keeping the canvas at 1000 × 560. */
 .nw-header,
 .nw {
-  max-width: 64rem;
+  max-width: max(64rem, min(100%, calc((100vh - 9rem) * 1.7857 + 2rem)));
 }
 
 .nw {
@@ -12,36 +13,57 @@
 
 .nw-stage {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   border-radius: 0.75rem;
   overflow: hidden;
   border: 1px solid var(--border);
   background: #000;
 }
 
-.nw-stage canvas {
+.nw-stage > canvas {
   display: block;
   width: 100%;
-  aspect-ratio: 1000 / 500;
+  aspect-ratio: 1000 / 560;
   touch-action: manipulation;
 }
 
 /* Fullscreen: letterbox the canvas at its aspect ratio. */
 .nw-stage:fullscreen {
-  display: flex;
   align-items: center;
-  justify-content: center;
   border: 0;
   border-radius: 0;
 }
 
-.nw-stage:fullscreen canvas {
-  width: min(100vw, 200vh);
+.nw-stage:fullscreen > canvas {
+  width: min(100vw, 178.57vh);
+}
+
+/* On narrow screens, menus get room to breathe around the small canvas. */
+@media (max-width: 640px) {
+  .nw-stage.nw-open {
+    min-height: min(36rem, calc(100svh - 7rem));
+  }
 }
 
 .nw-hint {
   margin: 0.5rem 0 0;
   font-size: 0.8rem;
   color: var(--muted);
+}
+
+.nw-rotate {
+  display: none;
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) and (orientation: portrait) {
+  .nw-rotate {
+    display: block;
+  }
 }
 
 .nw-overlay {
@@ -51,19 +73,46 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgb(0 0 0 / 0.6);
+  background: rgb(0 0 0 / 0.62);
   color: #fff;
   text-align: center;
   overflow-y: auto;
+}
+
+/* Menus over the live demo battle and results over the fallen castle. */
+.nw-overlay.light {
+  background: radial-gradient(ellipse at center, rgb(0 0 0 / 0.7), rgb(0 0 0 / 0.35));
 }
 
 .nw-overlay.open {
   display: flex;
 }
 
+.nw-overlay > div {
+  margin: auto;
+  max-width: 40rem;
+}
+
+.nw-overlay > .nw-wide {
+  max-width: 48rem;
+}
+
 .nw-overlay h2 {
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-size: clamp(1.4rem, 5vw, 2.5rem);
   margin: 0 0 0.25rem;
+  text-shadow: 0 2px 8px rgb(0 0 0 / 0.6);
+}
+
+.nw-overlay .nw-title {
+  font-size: clamp(1.8rem, 7vw, 3.75rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: linear-gradient(#fef9c3, #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 0 rgb(0 0 0 / 0.6));
 }
 
 .nw-overlay p {
@@ -88,6 +137,30 @@
   border: 0;
   border-radius: 0.5rem;
   cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.nw-overlay button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.35);
+}
+
+.nw-overlay button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.nw-overlay button small {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+.nw-overlay button.big {
+  min-width: 9rem;
+  padding: 0.7rem 1.4rem;
+  font-size: 1.1rem;
 }
 
 .nw-overlay button.primary {
@@ -98,4 +171,135 @@
 .nw-overlay .help {
   font-size: 0.85rem;
   color: #d6d3d1;
+}
+
+/* Campaign level select. */
+.nw-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.nw-overlay .nw-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.25rem;
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+  border: 2px solid transparent;
+}
+
+.nw-overlay .nw-card.sel {
+  border-color: #facc15;
+  background: rgb(250 204 21 / 0.15);
+}
+
+.nw-overlay .nw-card.locked {
+  opacity: 0.6;
+}
+
+.nw-portrait {
+  flex: none;
+  width: clamp(2.75rem, 8vw, 5.5rem);
+  height: clamp(2.75rem, 8vw, 5.5rem);
+}
+
+.nw-name {
+  font-size: 0.8rem;
+  line-height: 1.1;
+}
+
+.nw-sub {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #d6d3d1;
+}
+
+.nw-stars {
+  color: #facc15;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+}
+
+.nw-tag {
+  display: inline-block;
+  padding: 0 0.4rem;
+  border-radius: 0.3rem;
+  background: rgb(250 204 21 / 0.2);
+  color: #fde68a;
+  font-size: 0.8rem;
+}
+
+.nw-detail {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.6rem;
+  background: rgb(0 0 0 / 0.35);
+}
+
+.nw-detail p {
+  margin: 0.2rem 0;
+}
+
+.nw-settings {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.75rem auto;
+  max-width: 18rem;
+}
+
+.nw-bigstars {
+  font-size: clamp(2rem, 7vw, 3.25rem);
+  letter-spacing: 0.15em;
+  line-height: 1;
+}
+
+.nw-bigstars span {
+  display: inline-block;
+  color: rgb(255 255 255 / 0.2);
+}
+
+.nw-bigstars span.on {
+  color: #facc15;
+  text-shadow: 0 0 18px rgb(250 204 21 / 0.7);
+  animation: nw-star 0.5s backwards cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+@keyframes nw-star {
+  from {
+    transform: scale(2.4) rotate(-30deg);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .nw-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .nw-overlay {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .nw-overlay .nw-grid {
+    gap: 0.3rem;
+    margin: 0.4rem 0;
+  }
+
+  .nw-overlay .nw-card {
+    padding: 0.3rem 0.2rem;
+  }
+
+  .nw-detail .help {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nw-bigstars span.on {
+    animation: none;
+  }
 }

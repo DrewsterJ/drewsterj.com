@@ -1,6 +1,7 @@
+/* Grow with the window while the 2:1 canvas still fits on screen. */
 .nw-header,
 .nw {
-  max-width: 64rem;
+  max-width: max(64rem, min(100%, calc((100vh - 9rem) * 2 + 2rem)));
 }
 
 .nw {
@@ -98,4 +99,86 @@
 .nw-overlay .help {
   font-size: 0.85rem;
   color: #d6d3d1;
+}
+
+/* margin: auto centres the card but still lets a tall one scroll from the top. */
+.nw-overlay > div {
+  max-width: 40rem;
+  margin: auto;
+}
+
+.nw-overlay .row.settings {
+  margin-top: 0.75rem;
+}
+
+.nw-overlay button.small {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgb(255 255 255 / 0.15);
+  color: #fff;
+}
+
+.nw-overlay button.small:hover {
+  background: rgb(255 255 255 / 0.28);
+}
+
+/* End-of-run numbers. */
+.nw-overlay .stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0.5rem auto 0.75rem;
+  max-width: 30rem;
+}
+
+.nw-overlay .stats div {
+  padding: 0.35rem 0.25rem;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 0.08);
+}
+
+.nw-overlay .stats b {
+  display: block;
+  font-size: 1.15rem;
+  color: #fde68a;
+}
+
+.nw-overlay .stats span {
+  font-size: 0.7rem;
+  color: #d6d3d1;
+}
+
+.nw-overlay .memorial {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #d6d3d1;
+}
+
+.nw-overlay .memorial span {
+  color: #a8a29e;
+}
+
+/* The ending lets the dawn and the helicopter show through. */
+.nw-overlay.ending > div {
+  margin-bottom: 0;
+}
+
+.nw-overlay.ending {
+  background: linear-gradient(rgb(0 0 0 / 0), rgb(0 0 0 / 0.35) 35%, rgb(0 0 0 / 0.75));
+}
+
+@media (max-width: 40rem) {
+  .nw-overlay {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .nw-overlay p {
+    margin: 0.15rem 0 0.4rem;
+  }
+
+  .nw-overlay .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

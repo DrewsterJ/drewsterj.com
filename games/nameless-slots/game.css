@@ -1,6 +1,7 @@
+/* Grow the stage with the window, keeping its aspect ratio on screen. */
 .nw-header,
 .nw {
-  max-width: 64rem;
+  max-width: max(64rem, min(100%, calc((100vh - 9rem) * 1000 / 560 + 2rem)));
 }
 
 .nw {
@@ -48,10 +49,8 @@
   position: absolute;
   inset: 0;
   display: none;
-  align-items: center;
-  justify-content: center;
   padding: 1rem;
-  background: rgb(0 0 0 / 0.6);
+  background: rgb(10 4 24 / 0.84);
   color: #fff;
   text-align: center;
   overflow-y: auto;
@@ -59,6 +58,21 @@
 
 .nw-overlay.open {
   display: flex;
+}
+
+/* margin: auto centres the page but still lets a tall one scroll. */
+.nw-overlay > * {
+  margin: auto;
+  max-width: 52rem;
+}
+
+/* On small screens the menus get the whole viewport to breathe. */
+@media (max-width: 40rem) {
+  .nw-overlay.open {
+    position: fixed;
+    z-index: 50;
+    background: rgb(10 4 24 / 0.94);
+  }
 }
 
 .nw-overlay h2 {
@@ -98,4 +112,78 @@
 .nw-overlay .help {
   font-size: 0.85rem;
   color: #d6d3d1;
+}
+
+.nw-overlay button[aria-pressed='true'] {
+  background: #c4b5fd;
+}
+
+.nw-overlay .nw-gift {
+  color: #fde047;
+  font-weight: 600;
+}
+
+.nw-album {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: 0.6rem;
+  margin: 0.75rem 0;
+}
+
+.nw-album figure {
+  position: relative;
+  margin: 0;
+}
+
+.nw-album img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.nw-album span {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  padding: 0 0.4rem;
+  border-radius: 1rem;
+  background: #fde047;
+  color: #1c1917;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.nw-ach {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.nw-ach li {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 0.06);
+  color: #a8a29e;
+}
+
+.nw-ach li.got {
+  background: rgb(253 224 71 / 0.14);
+  color: #fef3c7;
+}
+
+.nw-ach b {
+  display: block;
+}
+
+.nw-ach li.got b {
+  color: #fde047;
+}
+
+.nw-ach span {
+  font-size: 0.85rem;
 }
