@@ -328,6 +328,7 @@
       skillKey,
       skill: SKILL[skillKey],
       sizeKey,
+      seed: (Math.random() * 2 ** 32) >>> 0,
       players: map.caps.map((c, k) => ({
         id: k,
         name: PLAYERS[k].name,
@@ -680,10 +681,11 @@
   let background = null;
 
   function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
     const w = canvas.clientWidth || W;
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(w * dpr * (H / W));
+    background = null; // redraw the map at the new resolution
   }
   window.addEventListener('resize', resize);
   document.addEventListener('fullscreenchange', resize);
@@ -715,12 +717,27 @@
   }
 
   // Tower size and height by level.
-  const towerR = (t) => 13 + t.level * 3 + (t.capital ? 3 : 0);
-  const towerH = (t) => 12 + t.level * 7 + (t.capital ? 6 : 0);
+  const towerR = (t) => 15 + t.level * 3.5 + (t.capital ? 4 : 0);
+  const towerH = (t) => 14 + t.level * 8 + (t.capital ? 8 : 0);
 
-  // The ground, trees and roads never change during a game: draw them once.
+  // Small seeded random generator, so the scenery stays put when redrawn.
+  function seeded(seed) {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6d2b79f5) >>> 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // The ground, trees and roads never change during a game: draw them once
+  // at the canvas's real resolution.
   function makeBackground() {
-    const S = 2;
+    const S = Math.max(1, canvas.width / W);
+    const rnd = seeded(state.seed);
+    const rand = (lo, hi) => lo + rnd() * (hi - lo);
+    const randInt = (lo, hi) => Math.floor(rand(lo, hi + 1));
     const c = document.createElement('canvas');
     c.width = W * S;
     c.height = H * S;
@@ -753,7 +770,7 @@
       for (let j = 0; j < n; j++) {
         const x = cx + rand(-30, 30);
         const y = cy + rand(-18, 18);
-        const r = rand(6, 11);
+        const r = rand(7, 13);
         if (clear(x, y, r)) trees.push({ x, y, r });
       }
     }
@@ -774,7 +791,7 @@
     }
     // Roads.
     g.lineCap = 'round';
-    for (const [w, col] of [[14, '#ddd1b6'], [9, '#efe7d4']]) {
+    for (const [w, col] of [[17, 'rgba(120,100,60,0.12)'], [15, '#d8cbad'], [10, '#efe7d4']]) {
       g.strokeStyle = col;
       g.lineWidth = w;
       g.beginPath();
@@ -833,16 +850,31 @@
 
     // Drag arrows.
     const hover = input.over ? towerAt(input.mx, input.my) : -1;
-    if (state.sel.length && (state.drag || hover >= 0)) {
+    if (state.sel.length && ((state.drag && !state.drag.box) || hover >= 0)) {
       const target = hover >= 0 && !state.sel.includes(hover) ? hover : -1;
       for (const i of state.sel) {
         const a = T[i];
         const ok = target >= 0 && route(0, i, target);
         const tx = target >= 0 ? T[target].x : input.mx;
         const ty = target >= 0 ? T[target].y - towerH(T[target]) / 2 : input.my;
-        if (!state.drag && target < 0) continue;
+        if ((!state.drag || state.drag.box) && target < 0) continue;
         arrow(a.x, a.y - towerH(a) / 2, tx, ty, target >= 0 ? (ok ? me().color : '#a8a29e') : 'rgba(37,99,235,0.55)', target >= 0 && !ok);
       }
+    }
+
+    // Selection box.
+    const d = state.drag;
+    if (d && d.box && d.moved) {
+      const x0 = Math.min(d.x, input.mx);
+      const y0 = Math.min(d.y, input.my);
+      ctx.fillStyle = 'rgba(37,99,235,0.1)';
+      ctx.strokeStyle = 'rgba(37,99,235,0.8)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 4]);
+      roundRect(x0, y0, Math.abs(input.mx - d.x), Math.abs(input.my - d.y), 4);
+      ctx.fill();
+      ctx.stroke();
+      ctx.setLineDash([]);
     }
 
     // Marching soldiers.
@@ -850,17 +882,17 @@
       const col = state.players[g.owner].color;
       const n = Math.min(12, Math.ceil(g.n));
       for (let k = n - 1; k >= 0; k--) {
-        const p = groupPos(g, k * 6.5);
+        const p = groupPos(g, k * 8);
         const bob = Math.sin(now * 12 + k + g.id) * 0.8;
         ctx.fillStyle = 'rgba(60,50,30,0.18)';
         ctx.beginPath();
-        ctx.ellipse(p.x + 1.5, p.y + 3, 3.5, 1.5, 0, 0, Math.PI * 2);
+        ctx.ellipse(p.x + 1.5, p.y + 3.5, 4.2, 1.8, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = col;
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.arc(p.x, p.y - 2 + bob, 3.4, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y - 2 + bob, 4.2, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
       }
@@ -934,124 +966,168 @@
     const r = towerR(t) * pop;
     const h = towerH(t) * pop;
     const { x, y } = t;
-    const ry = r * 0.38;
+    const ry = r * 0.36;
+    const top = y - h;
 
-    // Shadow.
-    ctx.fillStyle = 'rgba(70,55,30,0.18)';
+    // Soft shadow cast to the lower right.
+    ctx.fillStyle = 'rgba(60,45,20,0.2)';
     ctx.beginPath();
-    ctx.ellipse(x + 5, y + 3, r * 1.3, ry * 1.2, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + r * 0.45, y + ry * 0.7, r * 1.45, ry * 1.35, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Selection ring.
+    // Stone plinth.
+    ctx.fillStyle = '#c9bc9b';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 3, r * 1.25, ry * 1.3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#e4dac2';
+    ctx.beginPath();
+    ctx.ellipse(x, y, r * 1.22, ry * 1.22, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Selection and hover rings around the plinth.
     if (state.sel.includes(t.i)) {
+      const pulse = 1 + Math.sin(now * 6) * 0.04;
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 5;
       ctx.beginPath();
-      ctx.ellipse(x, y, r + 9, (r + 9) * 0.4, 0, 0, Math.PI * 2);
+      ctx.ellipse(x, y + 1, (r + 11) * pulse, (r + 11) * 0.4 * pulse, 0, 0, Math.PI * 2);
       ctx.stroke();
       ctx.strokeStyle = color;
       ctx.lineWidth = 2.5;
       ctx.stroke();
     } else if (hovered) {
-      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.95)';
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.ellipse(x, y, r + 7, (r + 7) * 0.4, 0, 0, Math.PI * 2);
+      ctx.ellipse(x, y + 1, r + 9, (r + 9) * 0.4, 0, 0, Math.PI * 2);
       ctx.stroke();
     }
 
-    // Body.
+    // Body, lit from the upper left.
     const grad = ctx.createLinearGradient(x - r, 0, x + r, 0);
-    grad.addColorStop(0, shade(color, -0.18));
-    grad.addColorStop(0.4, color);
-    grad.addColorStop(1, shade(color, -0.4));
+    grad.addColorStop(0, shade(color, -0.12));
+    grad.addColorStop(0.3, shade(color, 0.12));
+    grad.addColorStop(0.55, color);
+    grad.addColorStop(1, shade(color, -0.42));
     ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.moveTo(x - r, y - h);
+    ctx.moveTo(x - r, top);
     ctx.lineTo(x - r, y);
     ctx.ellipse(x, y, r, ry, 0, Math.PI, 0, true);
-    ctx.lineTo(x + r, y - h);
+    ctx.lineTo(x + r, top);
     ctx.closePath();
     ctx.fill();
-    // Level bands.
-    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-    ctx.lineWidth = 1.5;
-    for (let k = 1; k < t.level; k++) {
-      const by = y - (h * k) / t.level;
+
+    // Stone courses.
+    ctx.save();
+    ctx.clip();
+    ctx.strokeStyle = 'rgba(0,0,0,0.09)';
+    ctx.lineWidth = 1;
+    for (let cy = y - 6; cy > top + 4; cy -= 7) {
       ctx.beginPath();
-      ctx.ellipse(x, by, r, ry, 0, 0, Math.PI);
+      ctx.ellipse(x, cy, r, ry, 0, 0.15, Math.PI - 0.15);
       ctx.stroke();
     }
-    // Windows.
-    ctx.fillStyle = 'rgba(15,23,42,0.35)';
-    ctx.beginPath();
-    ctx.roundRect(x - 2.5, y - h * 0.55, 5, 7, [3, 3, 0, 0]);
-    ctx.fill();
+    // A soft highlight down the lit side.
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillRect(x - r * 0.62, top, r * 0.22, h + ry);
+    ctx.restore();
 
-    // Top.
-    const top = y - h;
-    if (t.capital) {
-      // Battlements.
-      ctx.fillStyle = shade(color, 0.1);
-      for (let k = 0; k < 8; k++) {
-        const a = (k / 8) * Math.PI * 2;
-        const mx = x + Math.cos(a) * r * 0.86;
-        const my = top + Math.sin(a) * ry * 0.86;
-        ctx.fillRect(mx - 3, my - 6, 6, 6);
-      }
+    // Door and windows.
+    ctx.fillStyle = shade(color, -0.6);
+    ctx.beginPath();
+    ctx.roundRect(x - r * 0.24, y + ry * 0.55 - r * 0.62, r * 0.48, r * 0.62, [r * 0.24, r * 0.24, 0, 0]);
+    ctx.fill();
+    for (let k = 1; k < t.level + (t.capital ? 1 : 0); k++) {
+      const wy = y - (h * k) / (t.level + 1) - 3;
+      ctx.beginPath();
+      ctx.roundRect(x - 2, wy - 5, 4, 8, [2, 2, 0, 0]);
+      ctx.fill();
     }
-    ctx.fillStyle = shade(color, 0.28);
+
+    // Battlements: back ones first, then the rim, then the front ones.
+    const merlons = 10;
+    const mw = r * 0.34;
+    const mh = r * 0.36;
+    const merlon = (k, front) => {
+      const a = (k / merlons) * Math.PI * 2 + Math.PI / merlons;
+      const s2 = Math.sin(a);
+      if (front !== s2 > 0) return;
+      const mx = x + Math.cos(a) * r * 0.9;
+      const my = top + s2 * ry * 0.9;
+      ctx.fillStyle = shade(color, front ? -0.05 - Math.cos(a) * 0.25 : -0.3);
+      ctx.fillRect(mx - mw / 2, my - mh, mw, mh);
+      ctx.fillStyle = shade(color, 0.3);
+      ctx.fillRect(mx - mw / 2, my - mh - 1.5, mw, 2.5);
+    };
+    for (let k = 0; k < merlons; k++) merlon(k, false);
+    ctx.fillStyle = shade(color, 0.32);
     ctx.beginPath();
-    ctx.ellipse(x, top, r, ry, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, top, r * 1.02, ry * 1.02, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = shade(color, 0.08);
+    ctx.fillStyle = shade(color, -0.22);
     ctx.beginPath();
-    ctx.ellipse(x, top + 1, r * 0.7, ry * 0.7, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, top + 1, r * 0.74, ry * 0.7, 0, 0, Math.PI * 2);
     ctx.fill();
-    if (t.capital) {
-      // Flag.
+    for (let k = 0; k < merlons; k++) merlon(k, true);
+
+    // Flag on every tower you hold, bigger on capitals.
+    if (t.owner >= 0) {
+      const fh = t.capital ? 24 : 16;
+      const fw = t.capital ? 15 : 11;
       ctx.strokeStyle = '#57534e';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.6;
       ctx.beginPath();
       ctx.moveTo(x, top);
-      ctx.lineTo(x, top - 18);
+      ctx.lineTo(x, top - fh);
       ctx.stroke();
-      const wave = Math.sin(now * 5 + t.i) * 1.5;
+      const wave = Math.sin(now * 5 + t.i) * 1.6;
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.moveTo(x, top - 18);
-      ctx.quadraticCurveTo(x + 7, top - 17 + wave, x + 13, top - 15);
-      ctx.lineTo(x, top - 11);
+      ctx.moveTo(x, top - fh);
+      ctx.quadraticCurveTo(x + fw * 0.5, top - fh + 1 + wave, x + fw, top - fh + 3);
+      ctx.quadraticCurveTo(x + fw * 0.5, top - fh + 7 + wave, x, top - fh + fh * 0.4);
       ctx.closePath();
       ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
     }
     if (t.flash > 0) {
       ctx.strokeStyle = `rgba(220,38,38,${t.flash})`;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.ellipse(x, top, r + 2, ry + 1, 0, 0, Math.PI * 2);
+      ctx.ellipse(x, top, r + 3, ry + 1.5, 0, 0, Math.PI * 2);
       ctx.stroke();
     }
   }
 
   function drawCount(t) {
     const color = t.owner >= 0 ? state.players[t.owner].color : '#78716c';
-    const top = t.y - towerH(t) - towerR(t) * 0.38 - (t.capital ? 22 : 8);
+    const top = t.y - towerH(t) - towerR(t) * 0.4 - (t.owner >= 0 ? (t.capital ? 28 : 20) : 8);
     const label = String(Math.floor(t.n));
-    ctx.font = 'bold 13px system-ui, sans-serif';
-    const w = Math.max(24, ctx.measureText(label).width + 12);
-    ctx.fillStyle = 'rgba(70,55,30,0.12)';
-    roundRect(t.x - w / 2 + 1, top - 17, w, 18, 9);
+    ctx.font = 'bold 15px system-ui, sans-serif';
+    const w = Math.max(30, ctx.measureText(label).width + 16);
+    ctx.fillStyle = 'rgba(70,55,30,0.16)';
+    roundRect(t.x - w / 2 + 1, top - 20, w, 22, 11);
     ctx.fill();
-    roundRect(t.x - w / 2, top - 18, w, 18, 9);
-    ctx.fillStyle = '#fff';
+    roundRect(t.x - w / 2, top - 22, w, 22, 11);
+    ctx.fillStyle = t.owner >= 0 ? color : '#fff';
     ctx.fill();
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = t.owner >= 0 ? 'rgba(255,255,255,0.9)' : '#a8a29e';
     ctx.lineWidth = 1.5;
     ctx.stroke();
-    ctx.fillStyle = color;
+    ctx.fillStyle = t.owner >= 0 ? '#fff' : '#57534e';
     ctx.textAlign = 'center';
-    ctx.fillText(label, t.x, top - 4.5);
+    ctx.fillText(label, t.x, top - 6);
+    // One pip per level.
+    for (let k = 0; k < t.level; k++) {
+      ctx.fillStyle = t.owner >= 0 ? color : '#a8a29e';
+      ctx.beginPath();
+      ctx.arc(t.x + (k - (t.level - 1) / 2) * 7, top + 5, 2.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -1082,9 +1158,12 @@
     return { id: 'upgrade', ok, label: `▲ Upgrade · ${UPGRADE[t.level]}`, x: t.x - 58, y: t.y + 14, w: 116, h: 22 };
   }
 
+  const selectAllButton = () => ({ id: 'all', label: 'Select all (A)', x: 296, y: H - 44, w: 116, h: 28 });
+
   function hitTest(x, y) {
     if (!state) return null;
     for (const b of sysButtons()) if (inside(b, x, y)) return b;
+    if (inside(selectAllButton(), x, y)) return selectAllButton();
     for (const b of fracButtons()) if (inside(b, x, y)) return b;
     const ub = upgradeButton();
     if (ub && inside(ub, x, y)) return ub;
@@ -1132,7 +1211,7 @@
       ctx.arc(x + 5, 48, 5, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#292524';
-      const label = p.alive ? `${p.name}  ${p.towers} towers · ${Math.floor(p.soldiers)}` : `${p.name}  out`;
+      const label = p.alive ? `${p.name}  ${p.towers} tower${p.towers === 1 ? '' : 's'} · ${Math.floor(p.soldiers)}` : `${p.name}  out`;
       ctx.font = p.id === 0 ? 'bold 12px system-ui, sans-serif' : '12px system-ui, sans-serif';
       ctx.fillText(label, x + 14, 52);
       x += ctx.measureText(label).width + 34;
@@ -1171,6 +1250,21 @@
       ctx.fillText(b.label, b.x + b.w / 2, b.y + 18);
     }
 
+    const sa = selectAllButton();
+    panel(sa.x - 6, H - 50, sa.w + 12, 40);
+    roundRect(sa.x, sa.y, sa.w, sa.h, 7);
+    ctx.fillStyle = hover && hover.id === 'all' ? '#e7e5e4' : '#f5f5f4';
+    ctx.fill();
+    ctx.fillStyle = '#292524';
+    ctx.font = 'bold 12px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(sa.label, sa.x + sa.w / 2, sa.y + 18);
+    if (state.sel.length > 1) {
+      ctx.fillStyle = me().color;
+      ctx.textAlign = 'left';
+      ctx.fillText(`${state.sel.length} towers selected · click a target`, sa.x + sa.w + 16, sa.y + 18);
+    }
+
     // Your production.
     const mine = state.towers.filter((t) => t.owner === 0);
     const rate = mine.reduce((s, t) => s + (t.n < CAP[t.level] * (t.capital ? 1.2 : 1) ? productionRate(t) : 0), 0);
@@ -1178,7 +1272,7 @@
     ctx.fillStyle = '#292524';
     ctx.textAlign = 'center';
     ctx.font = 'bold 12px system-ui, sans-serif';
-    ctx.fillText(`${mine.length} towers · +${rate.toFixed(1)} soldiers/s · +${Math.round(PER_TOWER_BONUS * 100 * Math.max(0, mine.length - 1))}% bonus`, W - 162, H - 25);
+    ctx.fillText(`${mine.length} tower${mine.length === 1 ? '' : 's'} · +${rate.toFixed(1)} soldiers/s · +${Math.round(PER_TOWER_BONUS * 100 * Math.max(0, mine.length - 1))}% bonus`, W - 162, H - 25);
 
     // Tower tooltip.
     if (hoverTower >= 0 && !state.drag) {
@@ -1217,13 +1311,13 @@
 
     if (state.t < 8 && state.mode === 'playing' && !state.players[0].ai) {
       ctx.globalAlpha = Math.min(1, (8 - state.t) / 1.5);
-      const msg = 'Drag from your blue tower to a neighbouring tower to send soldiers';
+      const msg = 'Drag from your blue tower to a connected tower to send soldiers';
       ctx.font = 'bold 14px system-ui, sans-serif';
       const w = ctx.measureText(msg).width + 32;
-      panel(W / 2 - w / 2, H - 92, w, 32);
+      panel(W / 2 - w / 2, 72, w, 32);
       ctx.fillStyle = '#1d4ed8';
       ctx.textAlign = 'center';
-      ctx.fillText(msg, W / 2, H - 71);
+      ctx.fillText(msg, W / 2, 93);
       ctx.globalAlpha = 1;
     }
   }
@@ -1261,7 +1355,7 @@
           ${optionRow('Map', Object.entries(SIZES).map(([k, s]) => [k, s.label]), save.size)}
           <div class="row"><button type="button" class="primary" data-act="start">Start</button></div>
           ${record()}
-          <p class="help">Drag from your towers to a tower connected by road. Swipe over several towers to send from all of them. Click a tower to upgrade it. 1–4 set how many to send.</p>
+          <p class="help">Drag from your tower to a connected tower to send soldiers. To use several towers, drag a box around them (or Shift-click, or press A for all), then click the target. Click one tower to upgrade it. 1–4 set how many to send.</p>
         </div>`;
     } else if (kind === 'paused') {
       overlay.innerHTML = `
@@ -1338,7 +1432,9 @@
     if (b.id === 'pause') togglePause();
     else if (b.id === 'mute') Sound.muted = !Sound.muted;
     else if (b.id === 'full') toggleFullscreen();
-    else if (b.id.startsWith('frac:')) {
+    else if (b.id === 'all') {
+      if (state.mode === 'playing') selectAll();
+    } else if (b.id.startsWith('frac:')) {
       state.frac = b.f;
       Sound.select();
     } else if (b.id === 'upgrade' && state.mode === 'playing') upgrade(0, state.sel[0]);
@@ -1388,6 +1484,13 @@
     state.sel = [];
   }
 
+  const ownTower = (i) => i >= 0 && state.towers[i].owner === 0;
+
+  function selectAll() {
+    state.sel = state.towers.filter((t) => t.owner === 0).map((t) => t.i);
+    Sound.select();
+  }
+
   canvas.addEventListener('pointermove', (e) => {
     const p = toCanvas(e);
     input.mx = p.x;
@@ -1396,9 +1499,10 @@
     const d = state && state.drag;
     if (!d || !playing()) return;
     if (Math.hypot(p.x - d.x, p.y - d.y) > 8) d.moved = true;
+    if (d.box) return;
     const i = towerAt(p.x, p.y);
     // Swiping over more of your towers adds them to the group.
-    if (i >= 0 && state.towers[i].owner === 0 && !state.sel.includes(i)) {
+    if (ownTower(i) && !state.sel.includes(i)) {
       state.sel.push(i);
       Sound.select();
     }
@@ -1419,25 +1523,32 @@
       return;
     }
     if (!playing()) return;
-    const i = towerAt(p.x, p.y);
-    if (i < 0) {
-      state.sel = [];
-      return;
-    }
-    const t = state.towers[i];
-    // Tap a tower while others are selected: send there.
-    if (state.sel.length && !state.sel.includes(i)) {
-      sendSelection(i);
-      return;
-    }
-    if (t.owner !== 0) {
-      state.sel = [];
-      return;
-    }
-    if (!state.sel.includes(i)) state.sel = [i];
-    state.drag = { start: i, x: p.x, y: p.y, moved: false };
-    Sound.select();
     canvas.setPointerCapture(e.pointerId);
+    const i = towerAt(p.x, p.y);
+    const add = e.shiftKey || e.ctrlKey || e.metaKey;
+    if (i < 0) {
+      // Empty ground: drag a box to select towers.
+      if (!add) state.sel = [];
+      state.drag = { box: true, x: p.x, y: p.y, moved: false, keep: [...state.sel] };
+      return;
+    }
+    if (!ownTower(i)) {
+      // Someone else's tower: send the selection there.
+      if (state.sel.length) sendSelection(i);
+      return;
+    }
+    if (add) {
+      // Shift-click toggles a tower in or out of the selection.
+      state.sel = state.sel.includes(i) ? state.sel.filter((j) => j !== i) : [...state.sel, i];
+      Sound.select();
+      return;
+    }
+    // Your own tower: keep the selection if it is part of it, so you can drag
+    // the whole group; otherwise select just this one.
+    const wasGroup = state.sel.includes(i) && state.sel.length > 1;
+    if (!state.sel.includes(i)) state.sel = [i];
+    state.drag = { start: i, x: p.x, y: p.y, moved: false, wasGroup };
+    Sound.select();
   });
   window.addEventListener('pointerup', (e) => {
     if (!state || !state.drag) return;
@@ -1445,16 +1556,29 @@
     state.drag = null;
     if (!playing()) return;
     const p = toCanvas(e);
+    if (d.box) {
+      if (!d.moved) return;
+      const x0 = Math.min(d.x, p.x);
+      const x1 = Math.max(d.x, p.x);
+      const y0 = Math.min(d.y, p.y);
+      const y1 = Math.max(d.y, p.y);
+      const inBox = state.towers.filter((t) => t.owner === 0 && t.x >= x0 - 8 && t.x <= x1 + 8 && t.y - towerH(t) / 2 >= y0 - 14 && t.y - towerH(t) / 2 <= y1 + 14);
+      state.sel = [...new Set([...d.keep, ...inBox.map((t) => t.i)])];
+      if (inBox.length) Sound.select();
+      return;
+    }
     const i = towerAt(p.x, p.y);
-    if (!d.moved) return; // a tap: keep the tower selected
+    if (!d.moved) {
+      // A plain click on a tower that was part of a group selects just it.
+      if (i === d.start && state.sel.length > 1 && !d.wasGroup) state.sel = [i];
+      return;
+    }
     if (i >= 0 && (!state.sel.includes(i) || state.sel.length > 1)) {
-      if (state.sel.includes(i) && state.towers[i].owner === 0) {
-        // Swiped across your own towers and ended on one of them: gather there.
+      if (state.sel.includes(i) && ownTower(i)) {
+        // Dragged the group onto one of its own towers: gather there.
         state.sel = state.sel.filter((j) => j !== i);
       }
       sendSelection(i);
-    } else if (i < 0) {
-      state.sel = [];
     }
   });
   canvas.addEventListener('contextmenu', (e) => {
@@ -1472,7 +1596,7 @@
     else if (!state || state.mode !== 'playing') return;
     else if (k >= '1' && k <= '4') state.frac = FRACS[Number(k) - 1];
     else if (k === 'u' && state.sel.length === 1) upgrade(0, state.sel[0]);
-    else if (k === 'a') state.sel = state.towers.filter((t) => t.owner === 0).map((t) => t.i);
+    else if (k === 'a') selectAll();
   });
 
   document.addEventListener('visibilitychange', () => {
