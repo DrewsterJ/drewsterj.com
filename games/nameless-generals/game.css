@@ -22,7 +22,7 @@
   display: block;
   width: 100%;
   aspect-ratio: 1000 / 560;
-  touch-action: manipulation;
+  touch-action: none; /* drags are orders, not page scrolls */
 }
 
 /* Fullscreen: letterbox the canvas at its aspect ratio. */
@@ -151,4 +151,188 @@
 .nw-header,
 .nw {
   max-width: max(64rem, min(100%, calc((100vh - 9rem) * 1000 / 560 + 2rem)));
+}
+
+/* Main menu: two big mode buttons. */
+.ng-modes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0.75rem 0;
+}
+
+.nw-overlay .ng-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 11rem;
+  padding: 0.7rem 1.2rem;
+  font-size: 1.1rem;
+}
+
+.ng-mode small {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.nw-overlay .ng-link {
+  padding: 0;
+  background: none;
+  color: #bfdbfe;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.ng-kicker {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fcd34d;
+}
+
+.nw-overlay .ng-goal {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: rgb(28 25 23 / 0.6);
+  color: #fde68a;
+  font-weight: 700;
+}
+
+/* Campaign level select. */
+.ng-panel.ng-campaign {
+  max-width: 46rem;
+}
+
+.ng-levels {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.nw-overlay .ng-level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.55rem 0.4rem;
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  transition: transform 0.12s, background 0.12s;
+}
+
+.nw-overlay .ng-level:not(.locked):hover {
+  background: rgb(255 255 255 / 0.22);
+  transform: translateY(-2px);
+}
+
+.nw-overlay .ng-level.locked {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ng-level .num {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+/* Stars: gold when earned; on the results screen they pop in one by one. */
+.ng-stars {
+  display: inline-flex;
+  gap: 0.1em;
+  letter-spacing: 0;
+}
+
+.ng-stars i {
+  font-style: normal;
+  color: rgb(255 255 255 / 0.25);
+}
+
+.ng-stars i.on {
+  color: #fbbf24;
+  text-shadow: 0 0 6px rgb(251 191 36 / 0.6);
+}
+
+.ng-stars.anim {
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  margin: 0.2rem 0;
+}
+
+.ng-stars.anim i.on {
+  animation: ng-star 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  animation-delay: var(--d);
+}
+
+@keyframes ng-star {
+  from {
+    transform: scale(0) rotate(-40deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ng-stars.anim i.on {
+    animation: none;
+  }
+}
+
+/* Phones: the stage is short, so keep the menus compact. */
+@media (max-width: 40rem) {
+  .nw-overlay {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .nw-overlay h2 {
+    font-size: 1.25rem;
+  }
+
+  .nw-overlay p {
+    margin: 0.15rem 0 0.4rem;
+  }
+
+  .nw-overlay .help {
+    font-size: 0.7rem;
+  }
+
+  .ng-levels {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.3rem;
+    margin: 0.4rem 0;
+  }
+
+  .nw-overlay .ng-level {
+    padding: 0.3rem 0.1rem;
+  }
+
+  .ng-level b {
+    display: none;
+  }
+
+  .ng-level .num {
+    font-size: 1rem;
+  }
+
+  .nw-overlay .ng-mode {
+    min-width: 8rem;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.95rem;
+  }
+
+  .nw-overlay button {
+    padding: 0.4rem 0.8rem;
+  }
 }
